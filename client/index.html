@@ -8,20 +8,75 @@
 </head>
 <body>
    <button id="get">Get Posts</button>
-   <button id="post">Create a Post</button>
-   
+   <div id="output"></div>
+   <hr>
+   <div>
+      <form id="formPost">
+         <div>
+            <label for="title">Title</label>
+            <input type="text" name="title" id="title" placeholder="Enter title">
+         </div>
+
+         <div>
+            <label for="body">Body</label>
+            <input type="text" name="body" id="body" placeholder="Enter body">
+         </div>
+
+         <button type="submit" id="post">Create a Post</button>
+      </form>
+   </div>
+   <div id="formOuput"></div>
+
    <script>
       const getButton = document.getElementById("get");
-      const postButton = document.getElementById("post");
+      const formPost = document.getElementById("formPost");
 
-      getButton.addEventListener('click', () => {
+      const txtTitle = document.getElementById("title");
+      const txtBody = document.getElementById("body");
+
+      getButton.addEventListener('click', getPosts);
+      formPost.addEventListener('submit', postPost);
+
+      function getPosts() {
          fetch('http://localhost:8080/feed/posts')
             .then(res => res.json())
             .then(resData => {
-               console.log(resData);
+               let html = '';
+               resData.posts.forEach(post => {
+                  html += `
+                     <h4>Title: ${post.title}</h4>
+                     <p>Body: ${post.body}</p>
+                  `;
+               });
+               document.getElementById('output').innerHTML = html;
             })
             .catch(err => console.log(err));
-      });
+      }
+
+      function postPost(e) {
+         e.preventDefault();
+         fetch('http://localhost:8080/feed/post', {
+            method: 'POST',
+            headers: {
+               'Content-type': 'application/json'
+            },
+            body: JSON.stringify({
+               title: txtTitle.value,
+               body: txtBody.value
+            })
+         })
+            .then(res => res.json())
+            .then(resData => {
+               let html = '';
+               html = `<h2>${resData.message}</h2>
+                  <h4>${resData.post.title}</h4>
+                  <p>${resData.post.body}</p>
+               `;
+               document.getElementById('formOuput').innerHTML = html;
+            })
+            .catch(err => console.log(err));
+      }
+      
    </script>
 </body>
 </html>

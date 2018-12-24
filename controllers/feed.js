@@ -3,7 +3,7 @@ exports.getPosts = (req, res, next) => {
       posts: [
          {
             title: 'First post',
-            body: 'This is my fucking first post!'
+            body: 'This is my first post!'
          }
       ]
    });
